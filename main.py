@@ -7,13 +7,12 @@ import sys
 from dotenv import load_dotenv
 
 from telethon import TelegramClient
-from text_normalizer import TextNormalizer
+from text_normalizer import normalize
 
 import pandas as pd
 
 def tokenize(text: str) -> list[str]:
-	normalized = TextNormalizer().normalize_text(text)
-	return [word for sentence in normalized for word in sentence.split()]
+	return [word for sentence in normalize(text) for word in sentence.split()]
 
 def telegram_download(user: str, api_id: str, api_hash: str) -> list[str]:
 	client = TelegramClient('downloader', api_id, api_hash)
@@ -35,4 +34,4 @@ if __name__ == "__main__":
 	messages = telegram_download(sys.argv[1], api_id, api_hash)
 	
 	messages = pd.DataFrame(messages)
-	messages.value_counts().to_csv(f"{sys.argv[1]}.csv")
+	messages.value_counts().to_csv(f"{sys.argv[1]}.csv", header=False)
