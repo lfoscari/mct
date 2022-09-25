@@ -26,11 +26,11 @@ Credits: https://gist.github.com/lvngd/3695aac64461de2cfb9d50bb11d5fbb3
 def normalize(text: str) -> list[str]:
 	lemmatizer = WordNetLemmatizer()
 	punctuation_table = str.maketrans('', '', string.punctuation)
-	stop_words = set(stopwords.words('english')) | set(stopwords.words('italian'))
+	# stop_words = set(stopwords.words('english')) | set(stopwords.words('italian'))
 
 	normalized_sentences = []
-	text = re.sub(' +',' ', text)
-	text = re.sub('\d+',' ', text)
+	text = re.sub(' +', ' ', text)
+	text = re.sub('\d+', ' ', text)
 	text = re.sub('http\S+', '', text)
 	text = unidecode.unidecode(text)
 	text = text.lower()
@@ -45,7 +45,7 @@ def normalize(text: str) -> list[str]:
 		words = word_tokenize(sentence)
 
 		# remove stopwords
-		filtered = [word for word in words if word not in stop_words]
-		normalized_sentences.extend(filtered)
+		# filtered = [word for word in words if word not in stop_words]
+		normalized_sentences.extend(words)
 	
 	return normalized_sentences

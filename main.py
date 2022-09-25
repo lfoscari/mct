@@ -4,24 +4,11 @@
 
 import os
 import sys
+import pandas as pd
 from dotenv import load_dotenv
 
-from telethon import TelegramClient
-from text_normalizer import normalize
-
-import pandas as pd
-
-def telegram_download(user: str, limit: int, api_id: str, api_hash: str) -> list[str]:
-	client = TelegramClient('downloader', api_id, api_hash)
-	client.start()
-
-	texts = []
-
-	for message in client.iter_messages(user, limit=limit, from_user=user):
-		if message.message is not None and message.media is None:
-			texts.extend(normalize(message.message))
-
-	return texts
+from telegram_download import telegram_download, save_texts
+from speech_generate import speech_learn
 
 def main():
 	load_dotenv()
@@ -29,10 +16,13 @@ def main():
 	api_hash = os.getenv("TELEGRAM_API_HASH")
 
 	user = sys.argv[1]
-	messages = telegram_download(user, 100, api_id, api_hash)
-	
-	messages = pd.DataFrame(messages)
-	messages.value_counts().to_csv(f"{user}.csv", header=False)
+	messages = telegram_download(user, None, api_id, api_hash)
+	# messages = eval(open(f"{user}.texts", "r").readline())
+	speech_patterns = speech_learn(messages, None)
+
+
+	# messages = pd.DataFrame([word for sentence in messages for word in sentence])
+	# messages.value_counts().to_csv(f"{user}.csv", header=False)
 
 if __name__ == "__main__":
 	main()
