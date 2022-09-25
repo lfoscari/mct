@@ -46,7 +46,6 @@ def normalize(text: str) -> list[str]:
 
 		# remove stopwords
 		filtered = [word for word in words if word not in stop_words]
-		new_sentence = ' '.join(filtered)
-		normalized_sentences.append(new_sentence)
+		normalized_sentences.extend(filtered)
 	
 	return normalized_sentences

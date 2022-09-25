@@ -11,27 +11,28 @@ from text_normalizer import normalize
 
 import pandas as pd
 
-def tokenize(text: str) -> list[str]:
-	return [word for sentence in normalize(text) for word in sentence.split()]
-
-def telegram_download(user: str, api_id: str, api_hash: str) -> list[str]:
+def telegram_download(user: str, limit: int, api_id: str, api_hash: str) -> list[str]:
 	client = TelegramClient('downloader', api_id, api_hash)
 	client.start()
 
 	texts = []
 
-	for message in client.iter_messages(user, limit=1000, from_user=user):
+	for message in client.iter_messages(user, limit=limit, from_user=user):
 		if message.message is not None and message.media is None:
-			texts.extend(tokenize(message.message))
+			texts.extend(normalize(message.message))
 
 	return texts
 
-if __name__ == "__main__":
+def main():
 	load_dotenv()
 	api_id = os.getenv("TELEGRAM_API_ID")
 	api_hash = os.getenv("TELEGRAM_API_HASH")
 
-	messages = telegram_download(sys.argv[1], api_id, api_hash)
+	user = sys.argv[1]
+	messages = telegram_download(user, 100, api_id, api_hash)
 	
 	messages = pd.DataFrame(messages)
-	messages.value_counts().to_csv(f"{sys.argv[1]}.csv", header=False)
+	messages.value_counts().to_csv(f"{user}.csv", header=False)
+
+if __name__ == "__main__":
+	main()
